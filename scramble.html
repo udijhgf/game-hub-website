@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word Scramble</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #121212;
+      color: #ffffff;
+      text-align: center;
+    }
+    h1 {
+      margin-top: 20px;
+    }
+    #scrambled {
+      font-size: 2rem;
+      margin: 20px 0;
+      letter-spacing: 5px;
+    }
+    input, button {
+      padding: 10px 15px;
+      font-size: 1rem;
+      margin: 5px;
+      border: none;
+      border-radius: 4px;
+    }
+    input {
+      width: 200px;
+    }
+    button {
+      background: #3f51b5;
+      color: #fff;
+      cursor: pointer;
+    }
+    #nextBtn {
+      background: #4caf50;
+    }
+    p a { color: #9fa8da; }
+  </style>
+</head>
+<body>
+  <h1>Word Scramble</h1>
+  <p id="scrambled"></p>
+  <input type="text" id="guessInput" placeholder="Unscramble the word" autocomplete="off">
+  <button id="guessBtn">Guess</button>
+  <button id="nextBtn">Next Word</button>
+  <p id="feedback"></p>
+  <p><a href="index.html">← Back to Home</a></p>
+  <script>
+    const words = ['javascript','python','html','css','browser','coding','computer','program','variable','function'];
+    let currentWord = '';
+
+    function shuffleWord(word) {
+      // Shuffle letters in the word
+      return word.split('').sort(() => Math.random() - 0.5).join('');
+    }
+
+    function newWord() {
+      currentWord = words[Math.floor(Math.random() * words.length)];
+      document.getElementById('scrambled').textContent = shuffleWord(currentWord);
+      document.getElementById('feedback').textContent = '';
+      document.getElementById('guessInput').value = '';
+    }
+
+    document.getElementById('guessBtn').addEventListener('click', () => {
+      const guess = document.getElementById('guessInput').value.trim().toLowerCase();
+      if (!currentWord) return;
+      if (guess === currentWord) {
+        document.getElementById('feedback').textContent = 'Correct!';
+      } else {
+        document.getElementById('feedback').textContent = 'Incorrect. Try again.';
+      }
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      newWord();
+    });
+
+    // Initialize with a random word on page load
+    newWord();
+  </script>
+</body>
+</html>

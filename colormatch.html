@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Match</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #121212;
+      color: #ffffff;
+      text-align: center;
+    }
+    h1 {
+      margin-top: 20px;
+    }
+    #colorBox {
+      width: 150px;
+      height: 150px;
+      margin: 30px auto;
+      border-radius: 8px;
+      border: 2px solid #fff;
+    }
+    #options button {
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      border-radius: 4px;
+      background: #3f51b5;
+      color: #fff;
+      cursor: pointer;
+    }
+    #nextBtn {
+      padding: 8px 16px;
+      margin-top: 10px;
+      background: #4caf50;
+      border: none;
+      color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    p a { color: #9fa8da; }
+  </style>
+</head>
+<body>
+  <h1>Color Match</h1>
+  <div id="colorBox"></div>
+  <div id="options"></div>
+  <p>Score: <span id="score">0</span></p>
+  <button id="nextBtn">Next Color</button>
+  <p><a href="index.html">← Back to Home</a></p>
+  <script>
+    const colors = [
+      { name: 'Red', hex: '#e74c3c' },
+      { name: 'Green', hex: '#2ecc71' },
+      { name: 'Blue', hex: '#3498db' },
+      { name: 'Yellow', hex: '#f1c40f' },
+      { name: 'Orange', hex: '#e67e22' },
+      { name: 'Purple', hex: '#9b59b6' },
+      { name: 'Pink', hex: '#e84393' },
+      { name: 'Cyan', hex: '#00bcd4' }
+    ];
+    let score = 0;
+    let correctColor = null;
+
+    function nextRound() {
+      // Pick a random color to display
+      const idx = Math.floor(Math.random() * colors.length);
+      correctColor = colors[idx];
+      document.getElementById('colorBox').style.background = correctColor.hex;
+      // Build options list including the correct one
+      const opts = [correctColor];
+      while (opts.length < 4) {
+        const r = Math.floor(Math.random() * colors.length);
+        if (!opts.includes(colors[r])) opts.push(colors[r]);
+      }
+      // Shuffle options
+      opts.sort(() => Math.random() - 0.5);
+      const optDiv = document.getElementById('options');
+      optDiv.innerHTML = '';
+      opts.forEach(color => {
+        const btn = document.createElement('button');
+        btn.textContent = color.name;
+        btn.addEventListener('click', () => {
+          if (color.name === correctColor.name) {
+            score++;
+          }
+          document.getElementById('score').textContent = score;
+          nextRound();
+        });
+        optDiv.appendChild(btn);
+      });
+    }
+
+    document.getElementById('nextBtn').addEventListener('click', nextRound);
+    // Initialize first round on load
+    nextRound();
+  </script>
+</body>
+</html>

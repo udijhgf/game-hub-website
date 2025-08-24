@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Math Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #121212;
+      color: #ffffff;
+      text-align: center;
+    }
+    h1 {
+      margin-top: 20px;
+    }
+    #question {
+      font-size: 1.5rem;
+      margin: 20px;
+    }
+    input, button {
+      padding: 10px 15px;
+      font-size: 1rem;
+      margin: 5px;
+      border: none;
+      border-radius: 4px;
+    }
+    input {
+      width: 100px;
+    }
+    button {
+      background: #3f51b5;
+      color: #fff;
+      cursor: pointer;
+    }
+    #restart {
+      background: #4caf50;
+    }
+    p a { color: #9fa8da; }
+  </style>
+</head>
+<body>
+  <h1>Quick Math Game</h1>
+  <p id="question">Press Submit to start</p>
+  <input type="number" id="answer" placeholder="Answer" autocomplete="off">
+  <button id="submit">Submit</button>
+  <button id="restart">Restart</button>
+  <p id="result"></p>
+  <p id="score"></p>
+  <p><a href="index.html">← Back to Home</a></p>
+  <script>
+    const operators = ['+', '-', '*'];
+    const totalQuestions = 10;
+    let currentAnswer = 0;
+    let questionCount = 0;
+    let correctCount = 0;
+
+    function generateQuestion() {
+      const num1 = Math.floor(Math.random() * 10) + 1;
+      const num2 = Math.floor(Math.random() * 10) + 1;
+      const op = operators[Math.floor(Math.random() * operators.length)];
+      let qText = `${num1} ${op} ${num2}`;
+      // Compute correct answer
+      switch (op) {
+        case '+': currentAnswer = num1 + num2; break;
+        case '-': currentAnswer = num1 - num2; break;
+        case '*': currentAnswer = num1 * num2; break;
+      }
+      document.getElementById('question').textContent = qText;
+    }
+
+    function submitAnswer() {
+      const ans = Number(document.getElementById('answer').value.trim());
+      if (questionCount === 0) {
+        // Start the game on first submit
+        questionCount = 1;
+        generateQuestion();
+        document.getElementById('result').textContent = '';
+        document.getElementById('score').textContent = '';
+        document.getElementById('answer').value = '';
+        return;
+      }
+      if (questionCount > totalQuestions) return;
+      if (ans === currentAnswer) {
+        correctCount++;
+        document.getElementById('result').textContent = 'Correct!';
+      } else {
+        document.getElementById('result').textContent = `Wrong! The correct answer was ${currentAnswer}.`;
+      }
+      questionCount++;
+      document.getElementById('answer').value = '';
+      if (questionCount > totalQuestions) {
+        document.getElementById('question').textContent = 'Quiz complete!';
+        document.getElementById('score').textContent = `You got ${correctCount} out of ${totalQuestions} correct.`;
+      } else {
+        generateQuestion();
+      }
+    }
+
+    document.getElementById('submit').addEventListener('click', submitAnswer);
+    document.getElementById('restart').addEventListener('click', () => {
+      questionCount = 0;
+      correctCount = 0;
+      currentAnswer = 0;
+      document.getElementById('question').textContent = 'Press Submit to start';
+      document.getElementById('result').textContent = '';
+      document.getElementById('score').textContent = '';
+      document.getElementById('answer').value = '';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catch the Dot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #121212;
+      color: #ffffff;
+      text-align: center;
+    }
+    h1 {
+      margin-top: 20px;
+    }
+    #gameArea {
+      width: 400px;
+      height: 400px;
+      margin: 30px auto;
+      background: #2c3e50;
+      position: relative;
+      border-radius: 8px;
+    }
+    #dot {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #e74c3c;
+      position: absolute;
+      cursor: pointer;
+    }
+    button {
+      padding: 10px 20px;
+      background: #3f51b5;
+      border: none;
+      color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    p a { color: #9fa8da; }
+  </style>
+</head>
+<body>
+  <h1>Catch the Dot</h1>
+  <div id="gameArea"></div>
+  <p>Score: <span id="score">0</span></p>
+  <p>Time left: <span id="time">20</span> seconds</p>
+  <button id="startBtn">Start Game</button>
+  <p><a href="index.html">← Back to Home</a></p>
+  <script>
+    const area = document.getElementById('gameArea');
+    let score = 0;
+    let timeLeft = 20;
+    let timerId = null;
+    let dot = null;
+
+    function moveDot() {
+      if (!dot) return;
+      const size = 40;
+      const maxX = area.clientWidth - size;
+      const maxY = area.clientHeight - size;
+      const x = Math.floor(Math.random() * maxX);
+      const y = Math.floor(Math.random() * maxY);
+      dot.style.left = x + 'px';
+      dot.style.top = y + 'px';
+    }
+
+    function startGame() {
+      // Reset
+      score = 0;
+      timeLeft = 20;
+      document.getElementById('score').textContent = score;
+      document.getElementById('time').textContent = timeLeft;
+      if (dot) area.removeChild(dot);
+      dot = document.createElement('div');
+      dot.id = 'dot';
+      dot.addEventListener('click', () => {
+        score++;
+        document.getElementById('score').textContent = score;
+        moveDot();
+      });
+      area.appendChild(dot);
+      moveDot();
+      // Start timer
+      clearInterval(timerId);
+      timerId = setInterval(() => {
+        timeLeft--;
+        document.getElementById('time').textContent = timeLeft;
+        if (timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
+    }
+
+    function endGame() {
+      clearInterval(timerId);
+      if (dot && area.contains(dot)) area.removeChild(dot);
+      alert('Time\'s up! Your score: ' + score);
+    }
+
+    document.getElementById('startBtn').addEventListener('click', startGame);
+  </script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lights Out</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #121212;
+      color: #ffffff;
+      text-align: center;
+    }
+    h1 {
+      margin-top: 20px;
+    }
+    #board {
+      margin: 30px auto;
+      width: fit-content;
+    }
+    #board div {
+      display: flex;
+    }
+    #board div div {
+      width: 60px;
+      height: 60px;
+      border: 1px solid #555;
+      cursor: pointer;
+    }
+    #message {
+      margin: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      background: #4caf50;
+      border: none;
+      color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    p a { color: #9fa8da; }
+  </style>
+</head>
+<body>
+  <h1>Lights Out</h1>
+  <div id="board"></div>
+  <p id="message"></p>
+  <button id="restart">Restart</button>
+  <p><a href="index.html">← Back to Home</a></p>
+  <script>
+    const size = 3;
+    let board = [];
+
+    function init() {
+      board = [];
+      for (let r = 0; r < size; r++) {
+        board[r] = [];
+        for (let c = 0; c < size; c++) {
+          board[r][c] = Math.random() < 0.5;
+        }
+      }
+      render();
+    }
+
+    function toggle(r, c) {
+      const dirs = [ [0,0], [1,0], [-1,0], [0,1], [0,-1] ];
+      dirs.forEach(([dr, dc]) => {
+        const nr = r + dr;
+        const nc = c + dc;
+        if (nr >= 0 && nr < size && nc >= 0 && nc < size) {
+          board[nr][nc] = !board[nr][nc];
+        }
+      });
+      render();
+      if (checkWin()) {
+        document.getElementById('message').textContent = 'You win!';
+      }
+    }
+
+    function render() {
+      const container = document.getElementById('board');
+      container.innerHTML = '';
+      for (let r = 0; r < size; r++) {
+        const rowDiv = document.createElement('div');
+        for (let c = 0; c < size; c++) {
+          const cell = document.createElement('div');
+          cell.style.background = board[r][c] ? '#f1c40f' : '#2c3e50';
+          cell.addEventListener('click', ((row, col) => () => toggle(row, col))(r, c));
+          rowDiv.appendChild(cell);
+        }
+        container.appendChild(rowDiv);
+      }
+    }
+
+    function checkWin() {
+      return board.every(row => row.every(cell => !cell));
+    }
+
+    document.getElementById('restart').addEventListener('click', () => {
+      document.getElementById('message').textContent = '';
+      init();
+    });
+
+    init();
+  </script>
+</body>
+</html>

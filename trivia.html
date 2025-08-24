@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trivia Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #121212;
+      color: #ffffff;
+      text-align: center;
+    }
+    h1 {
+      margin-top: 20px;
+    }
+    #question {
+      font-size: 1.2rem;
+      margin: 20px;
+    }
+    #options button {
+      display: block;
+      margin: 5px auto;
+      padding: 10px 15px;
+      width: 300px;
+      max-width: 80%;
+      border: none;
+      border-radius: 4px;
+      background: #3f51b5;
+      color: #fff;
+      cursor: pointer;
+    }
+    #restart {
+      padding: 10px 20px;
+      margin-top: 10px;
+      background: #4caf50;
+      border: none;
+      color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    p a { color: #9fa8da; }
+  </style>
+</head>
+<body>
+  <h1>Trivia Quiz</h1>
+  <p id="question"></p>
+  <div id="options"></div>
+  <p id="score"></p>
+  <button id="restart">Restart Quiz</button>
+  <p><a href="index.html">← Back to Home</a></p>
+  <script>
+    const questions = [
+      { q: 'What is the capital of France?', options: ['London','Paris','Berlin','Madrid'], ans: 'Paris' },
+      { q: 'Which planet is known as the Red Planet?', options: ['Mars','Venus','Jupiter','Saturn'], ans: 'Mars' },
+      { q: 'Who wrote “Hamlet”?', options: ['Charles Dickens','William Shakespeare','Mark Twain','Leo Tolstoy'], ans: 'William Shakespeare' },
+      { q: 'What is the largest ocean on Earth?', options: ['Atlantic','Indian','Pacific','Arctic'], ans: 'Pacific' },
+      { q: 'Which element has the chemical symbol O?', options: ['Gold','Oxygen','Iron','Silver'], ans: 'Oxygen' }
+    ];
+    let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      if (current >= questions.length) {
+        document.getElementById('question').textContent = 'Quiz Over!';
+        document.getElementById('options').innerHTML = '';
+        document.getElementById('score').textContent = 'Your score: ' + score + '/' + questions.length;
+        return;
+      }
+      const q = questions[current];
+      document.getElementById('question').textContent = q.q;
+      const optionsDiv = document.getElementById('options');
+      optionsDiv.innerHTML = '';
+      q.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.textContent = opt;
+        btn.addEventListener('click', () => selectOption(opt));
+        optionsDiv.appendChild(btn);
+      });
+    }
+
+    function selectOption(choice) {
+      if (choice === questions[current].ans) {
+        score++;
+      }
+      current++;
+      loadQuestion();
+    }
+
+    document.getElementById('restart').addEventListener('click', () => {
+      current = 0;
+      score = 0;
+      document.getElementById('score').textContent = '';
+      loadQuestion();
+    });
+
+    loadQuestion();
+  </script>
+</body>
+</html>
