@@ -48,6 +48,10 @@
   </style>
 </head>
 <body>
+  <!-- Virtual currency bar -->
+  <div id="money-bar" style="text-align:right; margin:10px; font-size:0.9rem; color:#ccc;">
+    Balance: $<span id="balance-display">0</span>
+  </div>
   <h1>2048</h1>
   <div id="board"></div>
   <p id="score">Score: 0</p>
@@ -230,6 +234,14 @@
       init();
     });
     init();
+  </script>
+  <!-- Shared virtual currency scripts -->
+  <script src="money.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      initBalance();
+      updateBalanceDisplay();
+    });
   </script>
 </body>
 </html>

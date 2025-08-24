@@ -35,6 +35,10 @@
   </style>
 </head>
 <body>
+  <!-- Virtual currency bar -->
+  <div id="money-bar" style="text-align:right; margin:10px; font-size:0.9rem; color:#ccc;">
+    Balance: $<span id="balance-display">0</span>
+  </div>
   <h1>Pong</h1>
   <div id="score">Score: 0</div>
   <canvas id="gameCanvas" width="400" height="400"></canvas>
@@ -125,6 +129,14 @@
       gameInterval = setInterval(update, 16); // ~60 fps
     }
     startGame();
+  </script>
+  <!-- Shared virtual currency scripts -->
+  <script src="money.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      initBalance();
+      updateBalanceDisplay();
+    });
   </script>
 </body>
 </html>
