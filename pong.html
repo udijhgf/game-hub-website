@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pong Game</title>
+  <style>
+    body {
+      background: #121212;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    #score {
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+    }
+    #gameCanvas {
+      background: #222;
+      border: 1px solid #333;
+    }
+    a {
+      margin-top: 20px;
+      color: #3f51b5;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pong</h1>
+  <div id="score">Score: 0</div>
+  <canvas id="gameCanvas" width="400" height="400"></canvas>
+  <a href="index.html">← Back to Home</a>
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const paddleHeight = 80;
+    const paddleWidth = 10;
+    const paddleX = 10; // player paddle is on left side
+    let paddleY = (canvas.height - paddleHeight) / 2;
+    const ballSize = 10;
+    let ballX;
+    let ballY;
+    let ballVX;
+    let ballVY;
+    let score = 0;
+    let gameInterval;
+
+    document.addEventListener('keydown', (e) => {
+      const moveAmount = 20;
+      if (e.key === 'ArrowUp' || e.key === 'w') {
+        paddleY = Math.max(0, paddleY - moveAmount);
+      } else if (e.key === 'ArrowDown' || e.key === 's') {
+        paddleY = Math.min(canvas.height - paddleHeight, paddleY + moveAmount);
+      }
+    });
+
+    function resetBall() {
+      // Start the ball from the center moving towards the player. We randomize the
+      // vertical velocity so each round feels a little different.
+      ballX = canvas.width / 2;
+      ballY = canvas.height / 2;
+      ballVX = -3;
+      // random vertical velocity between -2 and 2, but not zero
+      ballVY = (Math.random() * 4 - 2) || 1;
+    }
+
+    function update() {
+      // move ball
+      ballX += ballVX;
+      ballY += ballVY;
+      // bounce off top or bottom walls
+      if (ballY < 0 || ballY > canvas.height - ballSize) {
+        ballVY = -ballVY;
+      }
+      // bounce off right wall
+      if (ballX > canvas.width - ballSize) {
+        ballVX = -ballVX;
+      }
+      // collision with paddle
+      if (ballX <= paddleX + paddleWidth &&
+          ballY + ballSize >= paddleY && ballY <= paddleY + paddleHeight) {
+        ballVX = -ballVX;
+        // tweak vertical velocity based on where the ball hit the paddle
+        const collidePoint = (ballY + ballSize / 2) - (paddleY + paddleHeight / 2);
+        const normalize = collidePoint / (paddleHeight / 2);
+        ballVY = normalize * 4;
+        score++;
+        document.getElementById('score').textContent = `Score: ${score}`;
+      }
+      // check for game over (ball leaves the left side)
+      if (ballX < -ballSize) {
+        clearInterval(gameInterval);
+        document.getElementById('score').textContent = `Game over! Final score: ${score}`;
+        return;
+      }
+      draw();
+    }
+
+    function draw() {
+      ctx.fillStyle = '#222';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // draw paddle
+      ctx.fillStyle = '#3f51b5';
+      ctx.fillRect(paddleX, paddleY, paddleWidth, paddleHeight);
+      // draw ball
+      ctx.fillStyle = '#e91e63';
+      ctx.fillRect(ballX, ballY, ballSize, ballSize);
+    }
+
+    function startGame() {
+      score = 0;
+      document.getElementById('score').textContent = `Score: ${score}`;
+      resetBall();
+      draw();
+      if (gameInterval) clearInterval(gameInterval);
+      gameInterval = setInterval(update, 16); // ~60 fps
+    }
+    startGame();
+  </script>
+</body>
+</html>

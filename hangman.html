@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hangman Game</title>
+  <style>
+    body {
+      background: #121212;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    #word {
+      letter-spacing: 0.5rem;
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+    #wrong {
+      color: #e91e63;
+      margin-bottom: 20px;
+    }
+    #message {
+      margin-top: 10px;
+      font-size: 1.2rem;
+    }
+    input[type="text"] {
+      padding: 8px;
+      font-size: 1rem;
+      border: 1px solid #444;
+      border-radius: 4px;
+      background: #222;
+      color: #fff;
+      width: 200px;
+    }
+    button {
+      margin-left: 10px;
+      padding: 8px 12px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 4px;
+      background: #3f51b5;
+      color: #fff;
+      cursor: pointer;
+    }
+    a {
+      margin-top: 20px;
+      color: #3f51b5;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hangman</h1>
+  <div id="word"></div>
+  <div id="wrong"></div>
+  <div>
+    <input type="text" id="letterInput" placeholder="Enter a letter" maxlength="1">
+    <button onclick="guessLetter()">Guess</button>
+    <button onclick="startGame()">Restart</button>
+  </div>
+  <div id="message"></div>
+  <a href="index.html">← Back to Home</a>
+  <script>
+    const words = [
+      'javascript', 'hangman', 'programming', 'computer', 'developer',
+      'code', 'algorithm', 'debug', 'keyboard', 'internet'
+    ];
+    let secretWord;
+    let guessedLetters;
+    let wrongLetters;
+    const maxWrong = 6;
+
+    function chooseWord() {
+      const idx = Math.floor(Math.random() * words.length);
+      return words[idx];
+    }
+
+    function displayWord() {
+      const display = secretWord
+        .split('')
+        .map(ch => (guessedLetters.includes(ch) ? ch : '_'))
+        .join(' ');
+      document.getElementById('word').textContent = display;
+    }
+
+    function updateWrongDisplay() {
+      document.getElementById('wrong').textContent =
+        `Wrong letters: ${wrongLetters.join(' ')}`;
+    }
+
+    function guessLetter() {
+      const input = document.getElementById('letterInput');
+      const guess = input.value.toLowerCase();
+      input.value = '';
+      document.getElementById('message').textContent = '';
+      if (!guess || guess.length !== 1 || !/[a-z]/.test(guess)) {
+        document.getElementById('message').textContent = 'Please enter a single letter.';
+        return;
+      }
+      if (guessedLetters.includes(guess) || wrongLetters.includes(guess)) {
+        document.getElementById('message').textContent = 'You already guessed that letter.';
+        return;
+      }
+      if (secretWord.includes(guess)) {
+        guessedLetters.push(guess);
+        displayWord();
+        checkWin();
+      } else {
+        wrongLetters.push(guess);
+        updateWrongDisplay();
+        checkLoss();
+      }
+    }
+
+    function checkWin() {
+      const revealed = secretWord
+        .split('')
+        .every(ch => guessedLetters.includes(ch));
+      if (revealed) {
+        document.getElementById('message').textContent = 'You win! 🎉';
+      }
+    }
+
+    function checkLoss() {
+      if (wrongLetters.length >= maxWrong) {
+        document.getElementById('message').textContent = `Game over! The word was "${secretWord}".`;
+      }
+    }
+
+    function startGame() {
+      secretWord = chooseWord();
+      guessedLetters = [];
+      wrongLetters = [];
+      document.getElementById('message').textContent = '';
+      displayWord();
+      updateWrongDisplay();
+      document.getElementById('letterInput').focus();
+    }
+
+    // Start the first game when the page loads
+    startGame();
+  </script>
+</body>
+</html>

@@ -37,6 +37,11 @@
 <body>
   <h1>Snake Game</h1>
   <div id="score">Score: 0</div>
+
+  <!-- Instructions for the player to make it clear how to play the game. -->
+  <p id="instructions" style="margin-top: 0; font-size: 0.9rem; color: #888;">
+    Use the arrow keys to move the snake.
+  </p>
   <canvas id="gameCanvas" width="400" height="400"></canvas>
   <a href="index.html">← Back to Home</a>
   <script>
@@ -45,7 +50,9 @@
     const gridSize = 20;
     const tileCount = canvas.width / gridSize;
     let snake = [ { x: 10, y: 10 } ];
-    let velocity = { x: 0, y: 0 };
+    // Start the snake moving to the right by default. This makes it clear
+    // that the game is running even before the player presses any keys.
+    let velocity = { x: 1, y: 0 };
     let food = { x: 5, y: 5 };
     let score = 0;
     let gameInterval;
@@ -104,7 +111,9 @@
     }
     function startGame() {
       snake = [ { x: 10, y: 10 } ];
-      velocity = { x: 0, y: 0 };
+      // Start moving to the right by default whenever a new game begins. This
+      // helps signal that the game is active without any key presses.
+      velocity = { x: 1, y: 0 };
       score = 0;
       document.getElementById('score').textContent = `Score: ${score}`;
       randomFood();
