@@ -60,6 +60,9 @@
 </head>
 <body>
   <h1>Hangman</h1>
+  <!-- Canvas for drawing the hangman. The gallows are always drawn and body
+       parts appear as wrong guesses accumulate. -->
+  <canvas id="hangmanCanvas" width="200" height="250" style="background:#222;border:1px solid #333;margin-bottom:20px;"></canvas>
   <div id="word"></div>
   <div id="wrong"></div>
   <div>
@@ -78,6 +81,95 @@
     let guessedLetters;
     let wrongLetters;
     const maxWrong = 6;
+
+    // Grab the canvas and context for drawing the hangman. We'll reuse this
+    // across guesses to update the drawing based on the number of wrong
+    // letters.
+    const hangmanCanvas = document.getElementById('hangmanCanvas');
+    const hangCtx = hangmanCanvas.getContext('2d');
+
+    /**
+     * Clear the canvas and redraw the gallows. This should be called
+     * whenever starting a new game.
+     */
+    function drawGallows() {
+      hangCtx.clearRect(0, 0, hangmanCanvas.width, hangmanCanvas.height);
+      hangCtx.strokeStyle = '#888';
+      hangCtx.lineWidth = 4;
+      // base
+      hangCtx.beginPath();
+      hangCtx.moveTo(10, 230);
+      hangCtx.lineTo(190, 230);
+      hangCtx.stroke();
+      // upright
+      hangCtx.beginPath();
+      hangCtx.moveTo(40, 230);
+      hangCtx.lineTo(40, 40);
+      hangCtx.stroke();
+      // horizontal beam
+      hangCtx.beginPath();
+      hangCtx.moveTo(40, 40);
+      hangCtx.lineTo(120, 40);
+      hangCtx.stroke();
+      // rope
+      hangCtx.beginPath();
+      hangCtx.moveTo(120, 40);
+      hangCtx.lineTo(120, 60);
+      hangCtx.stroke();
+    }
+
+    /**
+     * Draw the hangman based on the number of wrong guesses. Parts are
+     * cumulative: head (1), body (2), left arm (3), right arm (4), left
+     * leg (5), right leg (6).
+     * @param {number} count - number of wrong guesses so far
+     */
+    function drawHangman(count) {
+      drawGallows();
+      hangCtx.strokeStyle = '#e91e63';
+      hangCtx.lineWidth = 4;
+      // head
+      if (count >= 1) {
+        hangCtx.beginPath();
+        hangCtx.arc(120, 80, 20, 0, Math.PI * 2);
+        hangCtx.stroke();
+      }
+      // body
+      if (count >= 2) {
+        hangCtx.beginPath();
+        hangCtx.moveTo(120, 100);
+        hangCtx.lineTo(120, 160);
+        hangCtx.stroke();
+      }
+      // left arm
+      if (count >= 3) {
+        hangCtx.beginPath();
+        hangCtx.moveTo(120, 120);
+        hangCtx.lineTo(90, 140);
+        hangCtx.stroke();
+      }
+      // right arm
+      if (count >= 4) {
+        hangCtx.beginPath();
+        hangCtx.moveTo(120, 120);
+        hangCtx.lineTo(150, 140);
+        hangCtx.stroke();
+      }
+      // left leg
+      if (count >= 5) {
+        hangCtx.beginPath();
+        hangCtx.moveTo(120, 160);
+        hangCtx.lineTo(90, 200);
+        hangCtx.stroke();
+      }
+      // right leg
+      if (count >= 6) {
+        hangCtx.beginPath();
+        hangCtx.moveTo(120, 160);
+        hangCtx.lineTo(150, 200);
+        hangCtx.stroke();
+      }
+    }
 
     function chooseWord() {
       const idx = Math.floor(Math.random() * words.length);
@@ -117,6 +209,8 @@
       } else {
         wrongLetters.push(guess);
         updateWrongDisplay();
+        // draw the next body part when the player makes a wrong guess
+        drawHangman(wrongLetters.length);
         checkLoss();
       }
     }
@@ -144,6 +238,8 @@
       displayWord();
       updateWrongDisplay();
       document.getElementById('letterInput').focus();
+      // reset the drawing when starting a new game
+      drawHangman(0);
     }
 
     // Start the first game when the page loads

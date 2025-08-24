@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Whack‑a‑Mole</title>
+  <style>
+    body {
+      background: #121212;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    #score {
+      margin-bottom: 15px;
+      font-size: 1.2rem;
+    }
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(3, 80px);
+      grid-template-rows: repeat(3, 80px);
+      gap: 10px;
+    }
+    .hole {
+      width: 80px;
+      height: 80px;
+      background: #333;
+      border: 2px solid #444;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .mole {
+      background: #e91e63;
+    }
+    a {
+      margin-top: 20px;
+      color: #3f51b5;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Whack‑a‑Mole</h1>
+  <div id="score">Score: 0</div>
+  <div id="grid"></div>
+  <button id="startBtn" onclick="startGame()" style="margin-top:15px;padding:8px 12px;font-size:1rem;border:none;border-radius:4px;background:#3f51b5;color:#fff;cursor:pointer;">Start Game</button>
+  <a href="index.html">← Back to Home</a>
+  <script>
+    const gridEl = document.getElementById('grid');
+    const scoreEl = document.getElementById('score');
+    const startBtn = document.getElementById('startBtn');
+    const holes = [];
+    let currentMole = -1;
+    let score = 0;
+    let moleCount = 0;
+    let maxMoles = 30;
+    let gameActive = false;
+    let moleTimeout;
+
+    // build grid
+    for (let i = 0; i < 9; i++) {
+      const div = document.createElement('div');
+      div.className = 'hole';
+      div.addEventListener('click', () => {
+        if (!gameActive) return;
+        if (i === currentMole) {
+          score++;
+          scoreEl.textContent = `Score: ${score}`;
+          nextMole();
+        }
+      });
+      holes.push(div);
+      gridEl.appendChild(div);
+    }
+
+    function nextMole() {
+      // remove old mole
+      if (currentMole >= 0) {
+        holes[currentMole].classList.remove('mole');
+      }
+      moleCount++;
+      if (moleCount > maxMoles) {
+        endGame();
+        return;
+      }
+      // pick random hole
+      const next = Math.floor(Math.random() * holes.length);
+      currentMole = next;
+      holes[next].classList.add('mole');
+      // automatically move mole after a delay if not clicked
+      clearTimeout(moleTimeout);
+      moleTimeout = setTimeout(() => {
+        nextMole();
+      }, 800);
+    }
+
+    function startGame() {
+      if (gameActive) return;
+      gameActive = true;
+      startBtn.disabled = true;
+      score = 0;
+      moleCount = 0;
+      scoreEl.textContent = `Score: ${score}`;
+      nextMole();
+    }
+
+    function endGame() {
+      gameActive = false;
+      startBtn.disabled = false;
+      // clear mole
+      if (currentMole >= 0) {
+        holes[currentMole].classList.remove('mole');
+      }
+      clearTimeout(moleTimeout);
+      scoreEl.textContent = `Game over! Final score: ${score}`;
+    }
+  </script>
+</body>
+</html>

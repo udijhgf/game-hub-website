@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reaction Timer</title>
+  <style>
+    body {
+      background: #121212;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    #playArea {
+      width: 300px;
+      height: 200px;
+      background: #333;
+      border: 2px solid #444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    #message {
+      margin-top: 15px;
+      font-size: 1.1rem;
+    }
+    a {
+      margin-top: 20px;
+      color: #3f51b5;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Reaction Timer</h1>
+  <div id="playArea">Click to start</div>
+  <div id="message"></div>
+  <a href="index.html">← Back to Home</a>
+  <script>
+    const playArea = document.getElementById('playArea');
+    const messageEl = document.getElementById('message');
+    let waitingTimeout;
+    let startTime;
+
+    function prepare() {
+      playArea.style.background = '#333';
+      playArea.textContent = 'Click to start';
+      messageEl.textContent = '';
+      startTime = null;
+    }
+
+    function startGame() {
+      playArea.textContent = '';
+      messageEl.textContent = 'Wait for green…';
+      // random delay between 2–5 seconds
+      const delay = Math.random() * 3000 + 2000;
+      waitingTimeout = setTimeout(() => {
+        playArea.style.background = '#4caf50';
+        messageEl.textContent = 'Click!';
+        startTime = performance.now();
+      }, delay);
+    }
+
+    playArea.addEventListener('click', () => {
+      // if no game started yet, start it
+      if (!startTime && !waitingTimeout) {
+        startGame();
+        return;
+      }
+      // clicked too early
+      if (!startTime) {
+        clearTimeout(waitingTimeout);
+        waitingTimeout = null;
+        playArea.style.background = '#e91e63';
+        messageEl.textContent = 'Too soon! Click to try again.';
+        setTimeout(prepare, 1500);
+        return;
+      }
+      // measure reaction
+      const reactionTime = Math.round(performance.now() - startTime);
+      playArea.style.background = '#333';
+      playArea.textContent = 'Click to play again';
+      messageEl.textContent = `Your reaction time: ${reactionTime} ms`;
+      startTime = null;
+      waitingTimeout = null;
+    });
+
+    // initialize
+    prepare();
+  </script>
+</body>
+</html>
